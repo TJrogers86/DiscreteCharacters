@@ -12,7 +12,6 @@ CleanData <- function(phy, data) {
 
 GetTreeWithNameProcessing <- function(treefile) {
   raw <- readLines(treefile)
-  raw <- gsub(" CSM", "", raw)
   raw <- gsub(" ", "_", raw)
   phy <- ape::read.tree(text=raw)
   phy$tip.label <- unname(GetAllGenusSpecies(phy$tip.label))
@@ -43,10 +42,32 @@ clean_up_diet <- function(unique_data){
 
 
 
-
-
-
-VisualizeData <- function(treedata) {
-  return(plot(treedata$phy))
-  print(treedata$data)
+VisualizeData <- function(phy, data, file_1, file_2) {
+  
+  plot(phy, type = "fan", show.tip.label=TRUE, edge.width = 0.1)
+  newdata <- data
+  print(newdata)
+  
+  plot_tree(phy, file_1, TRUE)
+  write.csv(newdata, file = file_2)
+  
 }
+
+plot_tree <- function(tree, file, label) {
+  pdf(file=file)
+  plot(tree, type = "fan", show.tip.label=label, edge.width = 0.1, cex = .5)
+  dev.off()
+}
+
+pars <- function(datatree_obj, file){
+  cleaned.discrete.phyDat <- phyDat(datatree_obj$data[,2], type = "USER", levels = c("0","1"))
+  anc.p <- ancestral.pars(datatree_obj$phy, cleaned.discrete.phyDat)
+  pdf(file = file)
+  plotAnc(datatree_obj$phy, anc.p, 1, cex.pie = .1, cex = .25, col = c("green", "red"))
+  dev.off()
+}
+
+
+
+
+
